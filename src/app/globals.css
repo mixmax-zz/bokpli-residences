@@ -1,0 +1,153 @@
+/* ─── Google Fonts (doit être avant @import "tailwindcss") ─────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&display=swap");
+
+@import "tailwindcss";
+
+/* ─── CSS Custom Properties — Charte Résidences Bokpli ─────────────────────── */
+:root {
+  /* Couleurs principales */
+  --color-navy:        #0B1F3A;
+  --color-gold:        #B8892A;
+  --color-gold-pale:   #F5EDD8;
+  --color-navy-pale:   #E8EDF4;
+  --color-ink:         #1C1C1E;
+  --color-stone:       #4A4A4A;
+  --color-cloud:       #F7F8FA;
+  --color-available:   #1B6B3A;
+  --color-reserved:    #B45309;
+  --color-sold:        #9B1C1C;
+
+  /* Typographies — Montserrat */
+  --font-serif:   "Montserrat", system-ui, sans-serif;   /* Bold 700  — titres        */
+  --font-heading: "Montserrat", system-ui, sans-serif;   /* SemiBold 600 — labels     */
+  --font-body:    "Montserrat", system-ui, sans-serif;   /* Light 300 — corps de texte */
+
+  /* Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Reset & base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background-color: var(--color-cloud);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Typographie globale ──────────────────────────────────────────────────── */
+@layer base {
+  h1, h2 {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  h3, h4 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  h5, h6, p, li, a {
+    font-family: var(--font-body);
+  }
+
+  p, li {
+    font-weight: 400;
+  }
+}
+
+/* ─── Séparateur or ────────────────────────────────────────────────────────── */
+.gold-divider {
+  width: 3.5rem;
+  height: 2px;
+  background: linear-gradient(to right, var(--color-gold), transparent);
+  display: block;
+  margin: 1rem 0;
+}
+
+/* ─── Boutons ──────────────────────────────────────────────────────────────── */
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background-color: var(--color-gold);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn-gold:hover {
+  background-color: #9a7322;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(184, 137, 42, 0.35);
+}
+
+.btn-outline-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background-color: transparent;
+  color: var(--color-gold);
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-gold);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn-outline-gold:hover {
+  background-color: var(--color-gold);
+  color: #fff;
+}
+
+/* ─── Scrollbar premium ────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-navy-pale);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-gold);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9a7322;
+}
+
+/* ─── Focus visible ────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+/* ─── Sélection ────────────────────────────────────────────────────────────── */
+::selection {
+  background-color: rgba(184, 137, 42, 0.25);
+  color: var(--color-ink);
+}
