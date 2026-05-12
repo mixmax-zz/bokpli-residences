@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { CalendarCheck, CheckCircle2, Phone, Mail, MapPin } from "lucide-react";
+import { CalendarCheck, CheckCircle2, Phone, Mail, MapPin, ShieldCheck } from "lucide-react";
 import CtaVisite from "@/components/sections/CtaVisite";
 
 // ─── Types d'appartements disponibles ────────────────────────────────────────
@@ -20,12 +20,13 @@ const TYPES_APPART = [
 
 // ─── Champs du formulaire ─────────────────────────────────────────────────────
 interface FormData {
-  prenom:   string;
-  nom:      string;
-  email:    string;
+  prenom:    string;
+  nom:       string;
+  email:     string;
   telephone: string;
-  type:     string;
-  message:  string;
+  type:      string;
+  message:   string;
+  honeypot:  string; // champ invisible anti-bot
 }
 
 const INITIAL: FormData = {
@@ -35,13 +36,29 @@ const INITIAL: FormData = {
   telephone: "",
   type:      "",
   message:   "",
+  honeypot:  "",
 };
+
+// ─── Génération captcha mathématique ─────────────────────────────────────────
+function genCaptcha() {
+  const a = Math.floor(Math.random() * 9) + 1;
+  const b = Math.floor(Math.random() * 9) + 1;
+  return { a, b, answer: a + b };
+}
 
 // ─── Composant principal ───────────────────────────────────────────────────────
 export default function ReservationClient() {
-  const [form, setForm]       = useState<FormData>(INITIAL);
+  const [form, setForm]           = useState<FormData>(INITIAL);
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]     = useState(false);
+  const [captcha, setCaptcha]     = useState(() => genCaptcha());
+  const [captchaInput, setCaptchaInput] = useState("");
+  const [captchaError, setCaptchaError] = useState(false);
+
+  useEffect(() => {
+    // Regénère le captcha au montage côté client
+    setCaptcha(genCaptcha());
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -49,6 +66,16 @@ export default function ReservationClient() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Honeypot : si rempli → bot détecté, on ignore silencieusement
+    if (form.honeypot) return;
+    // Vérification captcha
+    if (parseInt(captchaInput, 10) !== captcha.answer) {
+      setCaptchaError(true);
+      setCaptcha(genCaptcha());
+      setCaptchaInput("");
+      return;
+    }
+    setCaptchaError(false);
     setLoading(true);
     // Simulation envoi (à remplacer par API route si besoin)
     await new Promise(r => setTimeout(r, 1200));
@@ -281,6 +308,62 @@ export default function ReservationClient() {
                       />
                     </div>
 
+                    {/* Honeypot — invisible pour les humains, piège pour les bots */}
+                    <input
+                      type="text"
+                      name="honeypot"
+                      value={form.honeypot}
+                      onChange={handleChange}
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      style={{ display: "none" }}
+                    />
+
+                    {/* Anti-spam : question mathématique */}
+                    <div className="flex flex-col gap-1.5">
+                      <label
+                        htmlFor="captcha"
+                        className="text-[11px] font-bold tracking-[0.18em] uppercase flex items-center gap-1.5"
+                        style={{ fontFamily: "var(--font-heading)", color: "#0B1F3A" }}
+                      >
+                        <ShieldCheck size={13} strokeWidth={2} style={{ color: "#B8892A" }} />
+                        Vérification anti-spam <span style={{ color: "#B8892A" }}>*</span>
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="text-[14px] font-semibold shrink-0"
+                          style={{ fontFamily: "var(--font-body)", color: "#0B1F3A" }}
+                        >
+                          Combien font {captcha.a} + {captcha.b} ?
+                        </span>
+                        <input
+                          id="captcha"
+                          type="number"
+                          required
+                          value={captchaInput}
+                          onChange={e => { setCaptchaInput(e.target.value); setCaptchaError(false); }}
+                          placeholder="?"
+                          className="w-20 px-3 py-3 text-[14px] outline-none text-center"
+                          style={{
+                            fontFamily:   "var(--font-body)",
+                            color:        "#0B1F3A",
+                            border:       captchaError ? "1px solid #E24B4A" : "1px solid #E5E7EB",
+                            borderRadius: "3px",
+                            background:   "#fff",
+                          }}
+                        />
+                      </div>
+                      {captchaError && (
+                        <p
+                          className="text-[12px]"
+                          style={{ fontFamily: "var(--font-body)", color: "#E24B4A" }}
+                        >
+                          Réponse incorrecte. Veuillez réessayer.
+                        </p>
+                      )}
+                    </div>
+
                     {/* Bouton */}
                     <button
                       type="submit"
@@ -331,19 +414,19 @@ export default function ReservationClient() {
                 <ContactItem
                   icon={<Phone size={16} strokeWidth={1.8} />}
                   label="Téléphone"
-                  value="+225 07 00 00 00 00"
-                  href="tel:+2250700000000"
+                  value="+225 07 47 23 00 70"
+                  href="tel:+2250747230070"
                 />
                 <ContactItem
                   icon={<Mail size={16} strokeWidth={1.8} />}
                   label="E-mail"
-                  value="contact@bokpli.com"
-                  href="mailto:contact@bokpli.com"
+                  value="info@bokpli.com"
+                  href="mailto:info@bokpli.com"
                 />
                 <ContactItem
                   icon={<MapPin size={16} strokeWidth={1.8} />}
                   label="Adresse"
-                  value="Abidjan, Côte d'Ivoire"
+                  value="Riviera Palmeraie, Cocody Abidjan, Côte d'Ivoire"
                 />
               </div>
             </motion.div>
