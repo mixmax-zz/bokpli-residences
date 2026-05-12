@@ -12,9 +12,9 @@ import {
   MapPin,
   CheckCircle2,
   SlidersHorizontal,
-  CalendarCheck,
 } from "lucide-react";
-import Stats from "@/components/sections/Stats";
+import Stats     from "@/components/sections/Stats";
+import CtaVisite from "@/components/sections/CtaVisite";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type AptType = "tous" | "S0" | "S+2" | "S+4" | "S+6";
@@ -31,9 +31,10 @@ interface Appartement {
   status:    Status;
   pieces:    number;
   features:  string[];
+  image:     string; // rendu 3D associé
 }
 
-// ─── Données (issues du dossier commercial PDF – SCI BOKPLI, Sept. 2025) ──────
+// ─── Données (dossier commercial PDF – SCI BOKPLI, Sept. 2025) ────────────────
 const APPARTEMENTS: Appartement[] = [
   // ── Studios S0 ──────────────────────────────────────────────────────────
   {
@@ -47,6 +48,7 @@ const APPARTEMENTS: Appartement[] = [
     status:    "disponible",
     pieces:    1,
     features:  ["Studio 22.25 m²", "Dressing 2.56 m²", "Salle de bain", "Balcon privatif 3.59 m²"],
+    image:     "/images/appartements/sdb-1.jpg",
   },
 
   // ── 3 Pièces S+2 ────────────────────────────────────────────────────────
@@ -61,6 +63,7 @@ const APPARTEMENTS: Appartement[] = [
     status:    "disponible",
     pieces:    3,
     features:  ["Séjour 26.86 m²", "2 Suites", "Cuisine 13.67 m²", "Séchoir 4.04 m²", "2 Balcons privatifs"],
+    image:     "/images/appartements/salon-1.jpg",
   },
   {
     id:        "3p-type-b",
@@ -73,6 +76,7 @@ const APPARTEMENTS: Appartement[] = [
     status:    "disponible",
     pieces:    3,
     features:  ["Séjour 32.17 m²", "2 Suites", "Cuisine 13.90 m²", "3 Balcons privatifs"],
+    image:     "/images/appartements/salon-2.jpg",
   },
   {
     id:        "3p-type-c",
@@ -85,6 +89,7 @@ const APPARTEMENTS: Appartement[] = [
     status:    "disponible",
     pieces:    3,
     features:  ["Séjour 26.29 m²", "2 Suites", "Cuisine 13.61 m²", "Séchoir 4.04 m²", "2 Balcons privatifs"],
+    image:     "/images/appartements/salon-3.jpg",
   },
   {
     id:        "3p-type-d",
@@ -97,6 +102,7 @@ const APPARTEMENTS: Appartement[] = [
     status:    "disponible",
     pieces:    3,
     features:  ["Séjour 27.04 m²", "2 Suites", "Cuisine 13.11 m²", "3 Balcons privatifs", "Accès PMR"],
+    image:     "/images/appartements/salon-4.jpg",
   },
 
   // ── 5 Pièces S+4 ────────────────────────────────────────────────────────
@@ -118,6 +124,7 @@ const APPARTEMENTS: Appartement[] = [
       "Chambre de service",
       "Séchoir 8.35 m²",
     ],
+    image:     "/images/appartements/suite-1.jpg",
   },
   {
     id:        "5p-4-2",
@@ -137,6 +144,7 @@ const APPARTEMENTS: Appartement[] = [
       "Chambre de service",
       "Séchoir 8.52 m²",
     ],
+    image:     "/images/appartements/suite-2.jpg",
   },
 
   // ── Duplex S+6 ──────────────────────────────────────────────────────────
@@ -158,6 +166,7 @@ const APPARTEMENTS: Appartement[] = [
       "Buanderie & Cellier",
       "Sur 2 niveaux",
     ],
+    image:     "/images/appartements/exterieur-1.jpg",
   },
 ];
 
@@ -179,11 +188,11 @@ const STATUS_INFO: Record<Status, { label: string; color: string; bg: string }> 
 
 // ─── Filtres ──────────────────────────────────────────────────────────────────
 const FILTERS: { value: AptType; label: string; sub: string }[] = [
-  { value: "tous", label: "Tous",      sub: "19 unités"       },
-  { value: "S0",   label: "Studios",   sub: "S0 · ~29 m²"     },
-  { value: "S+2",  label: "3 Pièces",  sub: "S+2 · 100–108 m²"},
-  { value: "S+4",  label: "5 Pièces",  sub: "S+4 · 224–228 m²"},
-  { value: "S+6",  label: "Duplex",    sub: "S+6 · 375 m²"    },
+  { value: "tous", label: "Tous",      sub: "19 unités"        },
+  { value: "S0",   label: "Studios",   sub: "S0 · ~29 m²"      },
+  { value: "S+2",  label: "3 Pièces",  sub: "S+2 · 100–108 m²" },
+  { value: "S+4",  label: "5 Pièces",  sub: "S+4 · 224–228 m²" },
+  { value: "S+6",  label: "Duplex",    sub: "S+6 · 375 m²"     },
 ];
 
 function filterAccent(v: AptType) {
@@ -207,16 +216,29 @@ function AptCard({ apt, index }: { apt: Appartement; index: number }) {
         background:   "#0B1826",
         border:       `1px solid ${colors.border}`,
         borderRadius: "6px",
-        transition:   "border-color 0.25s, box-shadow 0.25s",
       }}
       whileHover={{ boxShadow: `0 8px 40px ${colors.accent}22` }}
     >
-      {/* ── Bandeau haut ── */}
-      <div
-        className="px-5 py-3.5 flex items-center justify-between"
-        style={{ background: colors.light, borderBottom: `1px solid ${colors.border}` }}
-      >
-        <div className="flex items-center gap-2.5">
+      {/* ── Image 3D ── */}
+      <div className="relative h-48 overflow-hidden flex-shrink-0">
+        <Image
+          src={apt.image}
+          alt={`Rendu 3D — ${apt.typeLabel}`}
+          fill
+          className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
+        {/* Overlay dégradé vers le bas */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(6,15,30,0.10) 0%, rgba(6,15,30,0.70) 100%)",
+          }}
+          aria-hidden="true"
+        />
+        {/* Badge type flottant sur l'image */}
+        <div className="absolute top-3 left-3 flex items-center gap-2">
           <span
             className="text-[10px] font-bold tracking-[0.18em] uppercase px-2 py-[3px]"
             style={{
@@ -229,37 +251,36 @@ function AptCard({ apt, index }: { apt: Appartement; index: number }) {
             {apt.type}
           </span>
           <span
-            className="text-[13px] font-semibold"
-            style={{ color: "#fff", fontFamily: "var(--font-heading)" }}
+            className="text-[10px] font-bold tracking-[0.1em] uppercase px-2.5 py-[3px]"
+            style={{
+              background:   statusInfo.bg,
+              color:        statusInfo.color,
+              borderRadius: "2px",
+              fontFamily:   "var(--font-heading)",
+              backdropFilter: "blur(4px)",
+            }}
           >
-            {apt.typeLabel}
+            {statusInfo.label}
           </span>
         </div>
-
-        {/* Statut */}
-        <span
-          className="text-[10px] font-bold tracking-[0.1em] uppercase px-2.5 py-1 flex-shrink-0"
-          style={{
-            background:   statusInfo.bg,
-            color:        statusInfo.color,
-            borderRadius: "2px",
-            fontFamily:   "var(--font-heading)",
-          }}
-        >
-          {statusInfo.label}
-        </span>
       </div>
 
       {/* ── Corps ── */}
       <div className="flex-1 p-5">
-        {/* Référence & étages */}
+        {/* Type label + ref */}
         <p
-          className="text-[11.5px] mb-1"
+          className="text-[14px] font-bold mb-0.5"
+          style={{ color: "#fff", fontFamily: "var(--font-heading)" }}
+        >
+          {apt.typeLabel}
+        </p>
+        <p
+          className="text-[11px] mb-1"
           style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-body)" }}
         >
           {apt.ref}
         </p>
-        <div className="flex items-center gap-1.5 mb-5">
+        <div className="flex items-center gap-1.5 mb-4">
           <MapPin size={11} style={{ color: colors.accent }} />
           <p
             className="text-[11px] font-semibold"
@@ -276,12 +297,12 @@ function AptCard({ apt, index }: { apt: Appartement; index: number }) {
 
         {/* Surface + Pièces */}
         <div
-          className="flex items-end gap-5 pb-5 mb-5"
+          className="flex items-end gap-5 pb-4 mb-4"
           style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
         >
           <div>
             <p
-              className="text-[46px] font-bold leading-none"
+              className="text-[40px] font-bold leading-none"
               style={{ color: colors.accent, fontFamily: "var(--font-serif)" }}
             >
               {apt.surface}
@@ -293,8 +314,7 @@ function AptCard({ apt, index }: { apt: Appartement; index: number }) {
               m² habitables
             </p>
           </div>
-
-          <div className="pb-1.5 flex flex-col gap-2">
+          <div className="pb-1 flex flex-col gap-2">
             <div className="flex items-center gap-1.5">
               <BedDouble size={13} style={{ color: "rgba(255,255,255,0.30)" }} />
               <span
@@ -317,7 +337,7 @@ function AptCard({ apt, index }: { apt: Appartement; index: number }) {
         </div>
 
         {/* Prestations */}
-        <ul className="flex flex-col gap-2 mb-5" style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <ul className="flex flex-col gap-2 mb-4" style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {apt.features.slice(0, VISIBLE).map((f) => (
             <li key={f} className="flex items-start gap-2.5">
               <CheckCircle2
@@ -422,8 +442,8 @@ export default function AppartementsClient({ initialType }: { initialType: strin
 
         {/* Image de fond */}
         <Image
-          src="/images/hero/slide-2.jpg"
-          alt="Résidence Bokpli — Appartements de prestige"
+          src="/images/hero/slide-3.jpg"
+          alt="Appartements de luxe — Résidence Bokpli"
           fill
           priority
           className="object-cover object-center"
@@ -434,7 +454,8 @@ export default function AppartementsClient({ initialType }: { initialType: strin
         <div
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(to bottom, rgba(6,15,30,0.72) 0%, rgba(6,15,30,0.55) 50%, rgba(6,15,30,0.85) 100%)",
+            background:
+              "linear-gradient(to bottom, rgba(6,15,30,0.72) 0%, rgba(6,15,30,0.55) 50%, rgba(6,15,30,0.85) 100%)",
           }}
           aria-hidden="true"
         />
@@ -471,7 +492,7 @@ export default function AppartementsClient({ initialType }: { initialType: strin
             className="text-[11px] font-bold tracking-[0.4em] uppercase mb-4"
             style={{ fontFamily: "var(--font-heading)", color: "#B8892A" }}
           >
-            Résidence Bokpli · Abidjan
+            Résidence Bokpli · SCI BOKPLI
           </motion.p>
 
           <span
@@ -487,7 +508,7 @@ export default function AppartementsClient({ initialType }: { initialType: strin
             className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] mb-6"
             style={{ fontFamily: "var(--font-serif)", color: "#fff" }}
           >
-            <span style={{ color: "#B8892A" }}>Catalogue</span> des appartements
+            Appartements <span style={{ color: "#B8892A" }}>de luxe</span>
           </motion.h1>
 
           <motion.p
@@ -576,7 +597,9 @@ export default function AppartementsClient({ initialType }: { initialType: strin
               style={{ color: "rgba(255,255,255,0.28)", fontFamily: "var(--font-body)" }}
             >
               {filtered.length} type{filtered.length > 1 ? "s" : ""} affiché{filtered.length > 1 ? "s" : ""} ·{" "}
-              <span style={{ color: "#B8892A" }}>{totalUnites} unité{totalUnites > 1 ? "s" : ""} disponible{totalUnites > 1 ? "s" : ""}</span>
+              <span style={{ color: "#B8892A" }}>
+                {totalUnites} unité{totalUnites > 1 ? "s" : ""} disponible{totalUnites > 1 ? "s" : ""}
+              </span>
             </p>
           </div>
 
@@ -598,111 +621,12 @@ export default function AppartementsClient({ initialType }: { initialType: strin
         </div>
       </section>
 
-      {/* ══ CTA CONTACT ══════════════════════════════════════════════════════ */}
-      <section
-        className="relative overflow-hidden"
-        style={{ background: "#0B1F3A", padding: "80px 0" }}
-      >
-        <div
-          className="absolute top-0 left-0 right-0 h-px"
-          style={{ background: "linear-gradient(to right, transparent, #B8892A, transparent)" }}
-          aria-hidden="true"
-        />
-        {/* Halo */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: "50%", left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "600px", height: "300px",
-            background: "radial-gradient(ellipse, rgba(184,137,42,0.08) 0%, transparent 70%)",
-            filter: "blur(40px)",
-          }}
-          aria-hidden="true"
-        />
-
-        <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-[11px] font-bold tracking-[0.4em] uppercase mb-3"
-            style={{ fontFamily: "var(--font-heading)", color: "#B8892A" }}
-          >
-            Intéressé par un appartement ?
-          </motion.p>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl md:text-4xl font-bold mb-5"
-            style={{ fontFamily: "var(--font-serif)", color: "#fff" }}
-          >
-            Organisons une visite
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-[14px] leading-relaxed mb-10"
-            style={{ fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.38)" }}
-          >
-            Notre équipe est disponible pour vous présenter les appartements,
-            répondre à vos questions et vous accompagner dans votre projet d'acquisition.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link
-              href="/reservation"
-              className="inline-flex items-center gap-2.5 px-8 py-4 font-bold tracking-[0.1em] uppercase transition-colors"
-              style={{
-                background:     "#B8892A",
-                color:          "#fff",
-                borderRadius:   "3px",
-                fontFamily:     "var(--font-heading)",
-                fontSize:       "12px",
-                textDecoration: "none",
-              }}
-            >
-              <CalendarCheck size={14} strokeWidth={2} />
-              Réserver une visite
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2.5 px-8 py-4 font-bold tracking-[0.1em] uppercase transition-colors"
-              style={{
-                background:     "transparent",
-                color:          "#B8892A",
-                border:         "1px solid rgba(184,137,42,0.4)",
-                borderRadius:   "3px",
-                fontFamily:     "var(--font-heading)",
-                fontSize:       "12px",
-                textDecoration: "none",
-              }}
-            >
-              Nous contacter
-              <ArrowRight size={13} strokeWidth={2} />
-            </Link>
-          </motion.div>
-        </div>
-
-        <div
-          className="absolute bottom-0 left-0 right-0 h-px"
-          style={{ background: "linear-gradient(to right, transparent, rgba(184,137,42,0.3), transparent)" }}
-          aria-hidden="true"
-        />
-      </section>
+      {/* ══ CTA VISITE ═══════════════════════════════════════════════════════ */}
+      <CtaVisite
+        bgImage="/images/hero/slide-1.jpg"
+        surtitle="Intéressé par un appartement ?"
+        title="Organisons une visite"
+      />
     </>
   );
 }
