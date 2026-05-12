@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   BedDouble,
@@ -13,6 +14,15 @@ import {
   SlidersHorizontal,
   CalendarCheck,
 } from "lucide-react";
+import Stats from "@/components/sections/Stats";
+
+// ─── Stats spécifiques à la page Appartements ────────────────────────────────
+const APPARTEMENTS_STATS = [
+  { valeur: "19",   label: "Appartements"       },
+  { valeur: "R+6",  label: "Niveaux"            },
+  { valeur: "2027", label: "Livraison prévue"   },
+  { valeur: "100%", label: "Disponibles"        },
+];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type AptType = "tous" | "S0" | "S+2" | "S+4" | "S+6";
@@ -416,42 +426,52 @@ export default function AppartementsClient({ initialType }: { initialType: strin
   return (
     <>
       {/* ══ HERO ════════════════════════════════════════════════════════════ */}
-      <section
-        className="relative overflow-hidden"
-        style={{ background: "#060F1E", padding: "72px 0 80px" }}
-      >
-        {/* Grille de fond */}
+      <section className="relative overflow-hidden" style={{ minHeight: "520px" }}>
+
+        {/* Image de fond */}
+        <Image
+          src="/images/hero/slide-2.jpg"
+          alt="Résidence Bokpli — Appartements de prestige"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+
+        {/* Overlay dégradé navy */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(to bottom, rgba(6,15,30,0.72) 0%, rgba(6,15,30,0.55) 50%, rgba(6,15,30,0.85) 100%)",
+          }}
+          aria-hidden="true"
+        />
+
+        {/* Grille subtile */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(184,137,42,0.04) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(184,137,42,0.04) 1px, transparent 1px)
+              linear-gradient(rgba(184,137,42,0.05) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(184,137,42,0.05) 1px, transparent 1px)
             `,
             backgroundSize: "60px 60px",
           }}
           aria-hidden="true"
         />
-        {/* Halo or */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            top: "50%", left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "700px", height: "350px",
-            background: "radial-gradient(ellipse, rgba(184,137,42,0.13) 0%, transparent 70%)",
-            filter: "blur(55px)",
-          }}
-          aria-hidden="true"
-        />
+
         {/* Ligne or haut */}
         <div
-          className="absolute top-0 left-0 right-0 h-px"
+          className="absolute top-0 left-0 right-0 h-[2px]"
           style={{ background: "linear-gradient(to right, transparent, #B8892A, transparent)" }}
           aria-hidden="true"
         />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
+        {/* Contenu */}
+        <div
+          className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center flex flex-col items-center justify-center"
+          style={{ minHeight: "520px", paddingTop: "60px", paddingBottom: "60px" }}
+        >
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -472,7 +492,7 @@ export default function AppartementsClient({ initialType }: { initialType: strin
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] mb-5"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05] mb-6"
             style={{ fontFamily: "var(--font-serif)", color: "#fff" }}
           >
             <span style={{ color: "#B8892A" }}>Catalogue</span> des appartements
@@ -482,50 +502,17 @@ export default function AppartementsClient({ initialType }: { initialType: strin
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-[15px] leading-relaxed max-w-xl mx-auto mb-12"
-            style={{ fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.4)" }}
+            className="text-[15px] leading-relaxed max-w-xl mx-auto"
+            style={{ fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.55)" }}
           >
             19 appartements de prestige répartis sur 7 niveaux.
             Studios, 3 pièces, 5 pièces et duplex panoramique — tous disponibles.
           </motion.p>
-
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex items-center justify-center gap-8 md:gap-14 flex-wrap"
-          >
-            {[
-              { val: "19",   label: "Appartements" },
-              { val: "R+6",  label: "Niveaux"      },
-              { val: "2027", label: "Livraison"     },
-              { val: "100%", label: "Disponibles"   },
-            ].map(({ val, label }) => (
-              <div key={label} className="text-center">
-                <p
-                  className="text-[30px] font-bold leading-none"
-                  style={{ fontFamily: "var(--font-serif)", color: "#B8892A" }}
-                >
-                  {val}
-                </p>
-                <p
-                  className="text-[10px] mt-1.5 uppercase tracking-[0.12em]"
-                  style={{ fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.28)" }}
-                >
-                  {label}
-                </p>
-              </div>
-            ))}
-          </motion.div>
         </div>
-
-        <div
-          className="absolute bottom-0 left-0 right-0 h-px"
-          style={{ background: "linear-gradient(to right, transparent, rgba(184,137,42,0.4), transparent)" }}
-          aria-hidden="true"
-        />
       </section>
+
+      {/* ══ STATISTIQUES (bande or) ══════════════════════════════════════════ */}
+      <Stats items={APPARTEMENTS_STATS} />
 
       {/* ══ CATALOGUE ════════════════════════════════════════════════════════ */}
       <section style={{ background: "#07101E", padding: "64px 0 88px" }}>
