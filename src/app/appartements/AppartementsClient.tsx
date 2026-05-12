@@ -16,14 +16,6 @@ import {
 } from "lucide-react";
 import Stats from "@/components/sections/Stats";
 
-// ─── Stats spécifiques à la page Appartements ────────────────────────────────
-const APPARTEMENTS_STATS = [
-  { valeur: "19",   label: "Appartements"       },
-  { valeur: "R+6",  label: "Niveaux"            },
-  { valeur: "2027", label: "Livraison prévue"   },
-  { valeur: "100%", label: "Disponibles"        },
-];
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 type AptType = "tous" | "S0" | "S+2" | "S+4" | "S+6";
 type Status  = "disponible" | "reserve" | "vendu";
@@ -511,8 +503,8 @@ export default function AppartementsClient({ initialType }: { initialType: strin
         </div>
       </section>
 
-      {/* ══ STATISTIQUES (bande or) ══════════════════════════════════════════ */}
-      <Stats items={APPARTEMENTS_STATS} />
+      {/* ══ STATISTIQUES (bande or — identique page d'accueil) ═════════════ */}
+      <Stats />
 
       {/* ══ CATALOGUE ════════════════════════════════════════════════════════ */}
       <section style={{ background: "#07101E", padding: "64px 0 88px" }}>
